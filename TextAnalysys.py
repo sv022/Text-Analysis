@@ -1,13 +1,6 @@
 from string import punctuation, ascii_letters
 from math import log2, ceil
 
-class Unit:
-    def __init__(self, value : str, probability : float, code : str) -> None:
-        self.value = value
-        self.probability = probability
-        self.code = code
-
-
 def showstats(text : str, showall=True):
     chars = countChars(text)
     symcount = symCount(text)
@@ -40,13 +33,6 @@ def format(filename : str, remove_whitespace=False) -> None:
     g.write(text.lower())
     g.close()
 
-def getItems(chars : dict, symcount : int, code='') -> list[Unit]:
-    items = []
-    for c in chars:
-        i = Unit(c, chars[c] / symcount, code)
-        items.append(i)
-    return items
-    
 
 def symCount(text : str) -> int:
     return len(text) - text.count(' ')
