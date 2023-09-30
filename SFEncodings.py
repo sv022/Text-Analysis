@@ -69,7 +69,7 @@ def shannon_fano_encode_2(data : str) -> (str, dict):
     root = build_shannon_fano_tree(sorted_data)
     codes = getCodes(root)
 
-    encoded_data = "".join([codes[symbol] for symbol in symbol_frequency])
+    encoded_data = "".join([codes[data[i] + data[i + 1]] for i in range(0, len(data) - 1, 2])
 
     return encoded_data, codes
 
