@@ -1,4 +1,4 @@
-from TextAnalysys import *
+from textanalysys import *
 
 class Unit:
     def __init__(self, symbol=None, frequency=0):
