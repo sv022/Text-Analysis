@@ -1,7 +1,7 @@
 from string import punctuation, ascii_letters
 from math import log2, ceil
 
-def showstats(text : str, showall=True):
+def showStats(text : str, showall=True):
     chars = countChars(text)
     symcount = symCount(text)
     syll = countTwoLetterSyll(text)
