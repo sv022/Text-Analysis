@@ -19,7 +19,7 @@ def showStats(text : str, showall=True):
     output.close()
 
 
-def format(filename : str, remove_whitespace=False) -> None:
+def formatfile(filename : str, remove_whitespace=False) -> None:
     f = open(filename, 'r')
     text = f.read().lower()
     if remove_whitespace:
@@ -32,6 +32,18 @@ def format(filename : str, remove_whitespace=False) -> None:
     g = open(filename.removesuffix('.txt') + '_format.txt', 'w')
     g.write(text.lower())
     g.close()
+    
+
+def format(text : str, remove_whitespace=False) -> str:
+    text = text.lower()
+    if remove_whitespace:
+        text = text.replace(' ', '')
+    for c in punctuation:
+        text = text.replace(c, '')
+    text = text.replace('\t', '')
+    text = text.replace('\n', '')
+    
+    return text
 
 
 def symCount(text : str) -> int:
