@@ -1,10 +1,13 @@
 from string import punctuation, ascii_letters
 from math import log2, ceil
 
-def showStats(text : str, showall=True):
-    chars = countChars(text)
-    symcount = symCount(text)
-    syll = countTwoLetterSyll(text)
+def _getsymcount(text : str) -> int:
+    return len(text) - text.count(' ')
+
+def logstats(text : str, showall=True):
+    chars = countchars(text)
+    symcount = _getsymcount(text)
+    syll = countsyll(text)
     output = open('stats.txt', 'w')
     output.write(f'Sample size: {symcount} character\n')
     i = 1
@@ -46,11 +49,7 @@ def format(text : str, remove_whitespace=False) -> str:
     return text
 
 
-def symCount(text : str) -> int:
-    return len(text) - text.count(' ')
-
-
-def countChars(text : str, count_whitespace=False) -> dict:
+def countchars(text : str, count_whitespace=False) -> dict:
     chars = {}
     for c in text:
         if not(c in ascii_letters):
@@ -66,40 +65,39 @@ def countChars(text : str, count_whitespace=False) -> dict:
 def countsyll(text : str, syll_len=2, count_whitespace=False) -> dict:
     text = text.replace(' ', '')
     syll = dict()
-    while len(text) % syll_len != 0:
-        text += 'z'
-    for i in range(0, len(text), syll_len):
+        
+    i = 0
+    while i < len(text):
         if not(all(c in ascii_letters for c in text[i:i+syll_len])):
             continue
         try:
             syll[text[i:i+syll_len]] += 1
         except Exception:
             syll[text[i:i+syll_len]] = 1
+        
+        i += syll_len
+    
+    syll[text[i:len(text)]] = 1
+    
+    try:
+        del syll['']
+    except KeyError:
+        pass
 
     return syll
 
 
-def getEntropyPerChar(chars : dict, symcount : int) -> float:
-    chardist = {}
-    for c in chars:
-        chardist[c] = chars[c] / symcount
-    entropyPerLetter = 0
-    for c in chardist:
-        entropyPerLetter += (-chardist[c] * log2(chardist[c]))
-    return entropyPerLetter
+def entropy(symbols: dict, symcount : int) -> float:
+    entropypersymbol = 0
+    for c in symbols:
+        p = symbols[c] / symcount
+        entropypersymbol += (-p * log2(p))
+    return entropypersymbol
 
 
-def entropyPerTwoLetterSyll(syll : dict, syllCount : int) -> float:
-    entropyTwoLetter = 0
-    for c in syll:
-        p = syll[c] / syllCount
-        entropyTwoLetter += (-log2(p) * p)
-    return entropyTwoLetter
-
-
-def minCodeLen(chars : dict) -> int:
+def mincodelength(chars : dict) -> int:
     return ceil(log2(len(chars)))
 
 
-def codeExcessiveness(entropy : float, symcount : int) -> float:
+def excessiveness(entropy : float, symcount : int) -> float:
     return  1 - (log2(entropy) / log2(symcount))
