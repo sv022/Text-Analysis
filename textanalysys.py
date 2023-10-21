@@ -63,17 +63,19 @@ def countChars(text : str, count_whitespace=False) -> dict:
     return chars
 
 
-def countTwoLetterSyll(text : str, count_whitespace=False) -> dict:
+def countsyll(text : str, syll_len=2, count_whitespace=False) -> dict:
     text = text.replace(' ', '')
     syll = dict()
-    for i in range(0, len(text) - 1, 2):
-        if not(text[i] in ascii_letters and text[i + 1] in ascii_letters):
+    while len(text) % syll_len != 0:
+        text += 'z'
+    for i in range(0, len(text), syll_len):
+        if not(all(c in ascii_letters for c in text[i:i+syll_len])):
             continue
         try:
-            syll[text[i] + text[i + 1]] += 1
+            syll[text[i:i+syll_len]] += 1
         except Exception:
-            syll[text[i] + text[i + 1]] = 1
-    if len(text) % 2 != 0: syll[text[-1] + ' '] = 2
+            syll[text[i:i+syll_len]] = 1
+
     return syll
 
 
