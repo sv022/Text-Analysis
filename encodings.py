@@ -8,7 +8,7 @@ class Unit:
         self.right = None
 
 
-def build_shannon_fano_tree(data : list[tuple]) -> Unit:
+def _buildtree(data : list[tuple]) -> Unit:
     if len(data) == 0:
         return None
     if len(data) == 1:
@@ -29,13 +29,13 @@ def build_shannon_fano_tree(data : list[tuple]) -> Unit:
     right_data = data[index + 1:]
 
     root = Unit()
-    root.left = build_shannon_fano_tree(left_data)
-    root.right = build_shannon_fano_tree(right_data)
+    root.left = _buildtree(left_data)
+    root.right = _buildtree(right_data)
 
     return root
 
 
-def getCodes(root, current_code="", code_dict=None):
+def _getcodes(root, current_code="", code_dict=None):
     if code_dict is None:
         code_dict = {}
 
@@ -43,38 +43,32 @@ def getCodes(root, current_code="", code_dict=None):
         code_dict[root.symbol] = current_code
         return code_dict
 
-    getCodes(root.left, current_code + "0", code_dict)
-    getCodes(root.right, current_code + "1", code_dict)
+    _getcodes(root.left, current_code + "0", code_dict)
+    _getcodes(root.right, current_code + "1", code_dict)
 
     return code_dict
 
 
-def shannon_fano_encode(data : str) -> (str, dict):
-    symbol_frequency = countTwoLetterSyll(data)
+def encode(data : str, syll_len=1) -> (str, dict):
+    if syll_len != 1:
+        symbol_frequency = countsyll(data, syll_len)
+    else:
+        symbol_frequency = countchars(data)
+        
     sorted_data = sorted(symbol_frequency.items(), key=lambda x: x[1], reverse=True)
 
-    root = build_shannon_fano_tree(sorted_data)
-    codes = getCodes(root)
-
-    encoded_data = "".join([codes[symbol] for symbol in data])
+    root = _buildtree(sorted_data)
+    codes = _getcodes(root)
+    
+    encoded_data = ''
+    for i in range(0, len(data), syll_len):
+        symbol = data[i:i+syll_len]
+        encoded_data += codes[symbol]
 
     return encoded_data, codes
 
 
-def shannon_fano_encode_2(data : str) -> (str, dict):
-    symbol_frequency = countTwoLetterSyll(data)
-
-    sorted_data = sorted(symbol_frequency.items(), key=lambda x: x[1], reverse=True)
-
-    root = build_shannon_fano_tree(sorted_data)
-    codes = getCodes(root)
-
-    encoded_data = "".join([codes[data[i] + data[i + 1]] for i in range(0, len(data) - 1, 2])
-
-    return encoded_data, codes
-
-
-def shannon_fano_decode(encoded_data, codes : dict):
+def decode(encoded_data, codes : dict):
     decoded_data = ""
     current_code = ""
     swapcodes = {val : key for key, val in codes.items()}
